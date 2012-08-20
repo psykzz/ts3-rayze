@@ -7,21 +7,26 @@
 --
 require("ts3defs")
 require("ts3errors")
+
 local debug = false
+
 function msg(txt)
    if debug then
       ts3.printMessageToCurrentTab(txt)
    end
 end
+
 function sendServerMessage(ServerConn, message) 
    local error_txtToServer = ts3.requestSendServerTextMsg(ServerConn, message)
    if error_txtToServer ~= ts3errors.ERROR_ok then 
       msg("Error sending message to Server channel")
       return false
    end
+   return true
 end
+
 function subscribeAllChannels(serverConnectionHandlerID) 
-local error = ts3.requestChannelSubscribeAll(serverConnectionHandlerID)
+   local error = ts3.requestChannelSubscribeAll(serverConnectionHandlerID)
 	if error == ts3errors.ERROR_not_connected then
 		msg("Not connected")
 		return false
@@ -29,7 +34,9 @@ local error = ts3.requestChannelSubscribeAll(serverConnectionHandlerID)
 		msg("Error subscribing channel: " .. error)
 		return false
 	end
+   return true
 end
+
 function getChannelID(ServerConn, ClientID)
    local myClientChannel, error_selfChannel = ts3.getChannelOfClient( ServerConn, ClientID )
    if error_selfChannel ~= ts3errors.ERROR_ok then
@@ -38,19 +45,20 @@ function getChannelID(ServerConn, ClientID)
    end
    return myClientChannel
 end
+
 function getSelfID(serverConnectionHandlerID) 
-   -- Get Self ID
 	local myClientID, error_getSelf = ts3.getClientID(serverConnectionHandlerID)
 	if error_getSelf ~= ts3errors.ERROR_ok then
 		msg("Error getting own client ID: " .. error)
-		return
+		return false
 	end
 	if myClientID == 0 then
 		msg("Not connected")
-		return
+		return false
 	end
    return myClientID
 end
+
 function kickFromChannel(ServerConn, ClientID, message)
    local error_kickClient = ts3.requestClientKickFromChannel(ServerConn, ClientID, "Lady luck has struck again!")
    if error_kickClient ~= ts3errors.ERROR_ok then
@@ -59,6 +67,7 @@ function kickFromChannel(ServerConn, ClientID, message)
    end
    return true
 end
+
 function kickFromServer(ServerConn, ClientID, message)
    local error_kickClient = ts3.requestClientKickFromServer(ServerConn, ClientID, "Lady luck has struck again!")
    if error_kickClient ~= ts3errors.ERROR_ok then
@@ -67,28 +76,29 @@ function kickFromServer(ServerConn, ClientID, message)
    end
    return true
 end
+
 function getClientName(ServerConn, ClientID)
  local clientName, error_clientName = ts3.getClientVariableAsString(ServerConn, ClientID, ts3defs.ClientProperties.CLIENT_NICKNAME)
 	if error_clientName ~= ts3errors.ERROR_ok then
 		msg("Error getting client nickname for #"..ClientID..".")
-		return
+		return false
    end
    return clientName
 end
+
 function getClientList(serverConnectionHandlerID)
-   -- Get Server Clients
    local clients, error_clientList = ts3.getClientList(serverConnectionHandlerID)
 	if error_clientList == ts3errors.ERROR_not_connected then
 		msg("Not connected")
-		return
+		return false
 	elseif error_clientList ~= ts3errors.ERROR_ok then
 		msg("Error getting client list: " .. error)
-		return
+		return false
 	end
    return clients
 end
+
 function rand1(lower,upper) 
-   --get random amount of rolls
    local norolls = math.random(1,100)
    local roll= {}
    for i=1,norolls do
@@ -97,6 +107,7 @@ function rand1(lower,upper)
    local selectroll = math.random(1,norolls)
    return roll[selectroll]
 end
+
 function rand(lower,upper)
    math.randomseed(tonumber(tostring(os.clock()):reverse():sub(1,6)))
    math.random()
