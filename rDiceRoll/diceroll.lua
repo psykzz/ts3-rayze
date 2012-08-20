@@ -1,6 +1,6 @@
 --
 -- rayze Roll dice admin fuck about
--- Version: 1.0
+-- Version: 1.1
 -- Author: PsyK
 -- Website: http://www.psykzz.co.uk
 -- E-Mail: matt.daemon660@gmail.com
@@ -8,10 +8,11 @@
 require("ts3defs")
 require("ts3errors")
 
-local debug = false
+-- Verbose mode : prints lots of debug text.
+local verbose = false
 
 function msg(txt)
-   if debug then
+   if verbose then
       ts3.printMessageToCurrentTab(txt)
    end
 end
