@@ -9,8 +9,9 @@
 -- Verbose mode : prints lots of debug text.
 local verbose = false
 
--- Starting seed 
-local seed = os.time()
+-- Randomise the seed, and waste a few samples.
+math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
+math.random(); math.random(); math.random()
 
 function msg(txt)
    if verbose then
@@ -126,13 +127,13 @@ function moveClient (ServerConn, clientID, newChannelID, password)
 end
 
 function rand(lower,upper)
-   seed = seed+1
+   --[[seed = seed+1
    math.randomseed(tonumber(tostring(seed):reverse():sub(1,6)))
    math.random()
    math.random()
    math.random()
    math.randomseed(tonumber(tostring(seed):reverse():sub(1,6))+math.random())
    math.random()
-   math.random()
+   math.random()--]]
    return math.random(lower,upper)
 end
