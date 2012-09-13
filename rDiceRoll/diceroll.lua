@@ -99,6 +99,30 @@ function getClientList(serverConnectionHandlerID)
    return clients
 end
 
+function getChannelList(serverConnectionHandlerID)
+   local channels, error_channelList = ts3.getChannelList(serverConnectionHandlerID)
+	if error_channelList == ts3errors.ERROR_not_connected then
+		msg("Not connected")
+		return false
+	elseif error_channelList ~= ts3errors.ERROR_ok then
+		msg("Error getting client list: " .. error)
+		return false
+	end
+   return channels
+end
+
+function moveClient (ServerConn, clientID, newChannelID, password)
+   local error_Move = ts3.requestClientMove(ServerConn, clientID, newChannelID, password)
+   if error_Move == ts3errors.ERROR_not_connected then
+		msg("Not connected")
+		return false
+	elseif error_Move ~= ts3errors.ERROR_ok then
+		msg("Error getting client list: " .. error)
+		return false
+	end
+   return true
+end
+
 function rand1(lower,upper) 
    local norolls = math.random(1,100)
    local roll= {}
@@ -131,6 +155,25 @@ function testChannel(serverConnectionHandlerID, ...)
       if myClientChannel == ClientChannel then
          local clientName = getClientName(serverConnectionHandlerID, v)
          ts3.requestSendServerTextMsg(serverConnectionHandlerID, clientName..",")
+      end
+   end
+end
+
+function scramble(serverConnectionHandlerID, ...)
+   subscribeAllChannels(serverConnectionHandlerID) 
+   local myClientID = getSelfID(serverConnectionHandlerID)
+   local clients = getClientList(serverConnectionHandlerID)
+   local channels = getChannelList(serverConnectionHandlerID)
+   for k,v in ipairs(clients) do
+      local rand = rand(1,#channels)
+      local clientChannel = getChannelID( serverConnectionHandlerID, v )
+      if clientChannel ~= myClientChannel then
+         msg('removed '.. v ..' because not in channel') 
+         table.remove(clients,k)
+      elseif
+         local clientName = getClientName(serverConnectionHandlerID, clients[k])
+         moveClient(k,rand)
+         sendServerMessage(serverConnectionHandlerID, "[b]Scramble![/b]")
       end
    end
 end
