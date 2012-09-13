@@ -1,12 +1,10 @@
 --[[
--- rayze Roll dice admin fuck about
--- Version: 1.1
+-- PsyK Mod -- Function file.
+-- Version: 1.2
 -- Author: PsyK
 -- Website: http://www.psykzz.co.uk
 -- E-Mail: matt.daemon660@gmail.com
 --]]
-require("ts3defs")
-require("ts3errors")
 
 -- Verbose mode : prints lots of debug text.
 local verbose = false
