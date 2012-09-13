@@ -1,10 +1,10 @@
---
+--[[
 -- rayze Roll dice admin fuck about
 -- Version: 1.1
 -- Author: PsyK
 -- Website: http://www.psykzz.co.uk
 -- E-Mail: matt.daemon660@gmail.com
---
+--]]
 require("ts3defs")
 require("ts3errors")
 
@@ -99,6 +99,7 @@ function getClientList(serverConnectionHandlerID)
    return clients
 end
 
+
 function getChannelList(serverConnectionHandlerID)
    local channels, error_channelList = ts3.getChannelList(serverConnectionHandlerID)
 	if error_channelList == ts3errors.ERROR_not_connected then
@@ -123,16 +124,6 @@ function moveClient (ServerConn, clientID, newChannelID, password)
    return true
 end
 
-function rand1(lower,upper) 
-   local norolls = math.random(1,100)
-   local roll= {}
-   for i=1,norolls do
-      roll[i] = math.random(lower,upper)
-   end
-   local selectroll = math.random(1,norolls)
-   return roll[selectroll]
-end
-
 function rand(lower,upper)
    math.randomseed(tonumber(tostring(os.clock()):reverse():sub(1,6)))
    math.random()
@@ -144,39 +135,26 @@ function rand(lower,upper)
    return math.random(lower,upper)
 end
 
-function testChannel(serverConnectionHandlerID, ...)
-   subscribeAllChannels(serverConnectionHandlerID) 
-   local myClientID = getSelfID(serverConnectionHandlerID)
-   local clients = getClientList(serverConnectionHandlerID)
-   local myClientChannel = getChannelID( serverConnectionHandlerID, myClientID )
-   sendServerMessage(serverConnectionHandlerID, "[b]Clients in channel "..myClientChannel.."[/b]")
-   for k,v in ipairs(clients) do 
-      local ClientChannel = getChannelID( serverConnectionHandlerID, v )
-      if myClientChannel == ClientChannel then
-         local clientName = getClientName(serverConnectionHandlerID, v)
-         ts3.requestSendServerTextMsg(serverConnectionHandlerID, clientName..",")
-      end
-   end
-end
-
 function scramble(serverConnectionHandlerID, ...)
    subscribeAllChannels(serverConnectionHandlerID) 
    local myClientID = getSelfID(serverConnectionHandlerID)
    local clients = getClientList(serverConnectionHandlerID)
+   local myClientChannel = getChannelID( serverConnectionHandlerID, myClientID )
    local channels = getChannelList(serverConnectionHandlerID)
    for k,v in ipairs(clients) do
       local rand = rand(1,#channels)
       local clientChannel = getChannelID( serverConnectionHandlerID, v )
       if clientChannel ~= myClientChannel then
+         print(""..v.."removed")
          msg('removed '.. v ..' because not in channel') 
          table.remove(clients,k)
-      elseif
+      else
          local clientName = getClientName(serverConnectionHandlerID, clients[k])
-         moveClient(k,rand)
+         moveClient(serverConnectionHandlerID,v,channels[rand], "")
          sendServerMessage(serverConnectionHandlerID, "[b]Scramble![/b]")
       end
    end
-end
+end 
 
 function roll(serverConnectionHandlerID, ...)
    subscribeAllChannels(serverConnectionHandlerID) 
